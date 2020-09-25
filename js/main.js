@@ -1,8 +1,8 @@
 'use strict';
 
-const PHOTOS_COUNT = 5;
+const PICTURES_COUNT = 25;
 
-const generateMockPhotos = (count) => {
+const generateMockPictures = (count) => {
   const MIN_LIKES = 15;
   const MAX_LIKES = 200;
   const MIN_AVATAR = 1;
@@ -24,7 +24,7 @@ const generateMockPhotos = (count) => {
     `Виктория`, `Алиса`, `Анастасия`, `Дмитрий`, `Полина`, `Елизавета`, `Александра`, `Дарья`,
     `Варвара`, `Екатерина`, `Кирилл`, `Ксения`, `Андрей`, `Матвей`, `Арина`, `Егор`];
 
-  const PHOTO_DESCRIPTIONS = [
+  const PICTURE_DESCRIPTIONS = [
     `Приветики`,
     `Коротко и ясно`,
     `Нечего добавить`,
@@ -61,7 +61,7 @@ const generateMockPhotos = (count) => {
   };
 
   const generateComments = (size) => {
-    let comments = [];
+    const comments = [];
     for (let i = 0; i < size; i++) {
       const comment = {
         avatar: `img/avatar-${randomNumber(MIN_AVATAR, MAX_AVATAR)}.svg`,
@@ -73,19 +73,40 @@ const generateMockPhotos = (count) => {
     return comments;
   };
 
-  let photos = [];
-  const urlPhotoNumbers = generateShuffledArray(count);
+  const pictures = [];
+  const urlPictureNumbers = generateShuffledArray(count);
   for (let i = 0; i < count; i++) {
-    let photo = {
-      url: `photos/${urlPhotoNumbers[i]}.jpg`,
-      description: getRandomItem(PHOTO_DESCRIPTIONS),
+    const picture = {
+      url: `photos/${urlPictureNumbers[i]}.jpg`,
+      description: getRandomItem(PICTURE_DESCRIPTIONS),
       likes: randomNumber(MIN_LIKES, MAX_LIKES),
       comments: generateComments(randomNumber(MIN_COMMENTS, MAX_COMMENTS))
     };
-    photos.push(photo);
+    pictures.push(picture);
   }
-  return photos;
+  return pictures;
 };
 
-const mockPhotos = generateMockPhotos(PHOTOS_COUNT);
-window.console.table(mockPhotos);
+const renderPictures = (mockPictures) => {
+  const renderPictureTemplate = (pictureObject) => {
+    const pictureTemplate = document.querySelector(`#picture`).content.querySelector(`.picture`);
+    const picture = pictureTemplate.cloneNode(true);
+    picture.querySelector(`.picture__img`).src = pictureObject.url;
+    picture.querySelector(`.picture__comments`).innerText = pictureObject.comments.length.toString();
+    picture.querySelector(`.picture__likes`).innerText = pictureObject.likes.toString();
+    return picture;
+  };
+
+  const fragment = document.createDocumentFragment();
+  mockPictures.forEach((mockPicture) => {
+    const picture = renderPictureTemplate(mockPicture);
+    fragment.appendChild(picture);
+  });
+
+  const pictures = document.querySelector(`.pictures`);
+  pictures.appendChild(fragment);
+};
+
+
+const mockPictures = generateMockPictures(PICTURES_COUNT);
+renderPictures(mockPictures);
