@@ -58,7 +58,7 @@ const PICTURE_DESCRIPTIONS = [
 ];
 
 const PictureEditScale = {
-  MIN: 0,
+  MIN: 25,
   MAX: 100,
   STEP: 25
 };
@@ -212,25 +212,35 @@ uploadFileCloseButton.addEventListener(`click`, () => {
 
 
 /**
- * Редактирование изображения --------------------------
+ * Редактирование изображения ----------------------------------------------------
+ */
+
+/**
+ * Масштаб ----------------------------------------------------
  */
 
 const pictureEditScaleButtonSmaller = picturesContainer.querySelector(`.scale__control--smaller`);
 const pictureEditScaleButtonBigger = picturesContainer.querySelector(`.scale__control--bigger`);
 const pictureEditScaleTextBox = picturesContainer.querySelector(`.scale__control--value`);
+const pictureEditUploadPreviewImage = picturesContainer.querySelector(`.img-upload__preview img`);
+
 
 const onScaleDownButtonPressed = (buttonType) => {
-  const oldPercent = pictureEditScaleTextBox.value.slice(0, -1);
+  const oldPercent = parseInt(pictureEditScaleTextBox.value.slice(0, -1), 10);
   let newPercent;
   switch (buttonType) {
     case PictureEditScaleButton.SMALLER:
-      newPercent = Math.max(parseInt(oldPercent, 10) - PictureEditScale.STEP, PictureEditScale.MIN);
+      newPercent = Math.max(oldPercent - PictureEditScale.STEP, PictureEditScale.MIN);
       break;
     case PictureEditScaleButton.BIGGER:
-      newPercent = Math.min(parseInt(oldPercent, 10) + PictureEditScale.STEP, PictureEditScale.MAX);
+      newPercent = Math.min(oldPercent + PictureEditScale.STEP, PictureEditScale.MAX);
       break;
   }
+  if (newPercent === oldPercent) {
+    return;
+  }
   pictureEditScaleTextBox.value = `${newPercent}%`;
+  pictureEditUploadPreviewImage.style.transform = `scale(${newPercent / 100})`;
 };
 
 pictureEditScaleButtonSmaller.addEventListener(`click`, () => {
@@ -240,3 +250,7 @@ pictureEditScaleButtonSmaller.addEventListener(`click`, () => {
 pictureEditScaleButtonBigger.addEventListener(`click`, () => {
   onScaleDownButtonPressed(PictureEditScaleButton.BIGGER);
 });
+
+/**
+ * Наложение эффекта на изображение ----------------------------------------------------
+ */
