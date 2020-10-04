@@ -177,6 +177,7 @@ const bodyTag = document.querySelector(`body`);
 const uploadImageOverlay = picturesSection.querySelector(`.img-upload__overlay`);
 const uploadFileInput = picturesSection.querySelector(`#upload-file`);
 const uploadFileCloseButton = picturesSection.querySelector(`#upload-cancel`);
+const textEditComment = picturesSection.querySelector(`.text__description`);
 
 /**
  * Обработчик нажатия Esc - закрывает попап с настройками
@@ -188,6 +189,16 @@ const onPopupEscPress = (evt) => {
     closePhotoEditWindow();
   }
 };
+
+// Запрет закрытия окна setup при фокусе на поле для воода комментария
+textEditComment.addEventListener(`focus`, () => {
+  document.removeEventListener(`keydown`, onPopupEscPress);
+});
+
+// Добавление закрытия окна setup при уходе фокуса с поля для воода комментария
+textEditComment.addEventListener(`blur`, () => {
+  document.addEventListener(`keydown`, onPopupEscPress);
+});
 
 // Открытие окна выбора фотографии
 const openPhotoEditWindow = () => {
@@ -228,6 +239,10 @@ const pictureEditScaleButtonBigger = picturesSection.querySelector(`.scale__cont
 const pictureEditScaleTextBox = picturesSection.querySelector(`.scale__control--value`);
 const pictureEditUploadPreviewImage = picturesSection.querySelector(`.img-upload__preview img`);
 
+/**
+ * Обработчик нажатий на кнопки изменения масштаба + / -
+ * @param {number} buttonType
+ */
 const onScaleDownButtonPressed = (buttonType) => {
   const oldPercent = parseInt(pictureEditScaleTextBox.value.slice(0, -1), 10);
   let newPercent;
@@ -246,10 +261,12 @@ const onScaleDownButtonPressed = (buttonType) => {
   pictureEditUploadPreviewImage.style.transform = `scale(${newPercent / 100})`;
 };
 
+// Нажатие на -
 pictureEditScaleButtonSmaller.addEventListener(`click`, () => {
   onScaleDownButtonPressed(PictureEditScaleButton.SMALLER);
 });
 
+// Нажатие на +
 pictureEditScaleButtonBigger.addEventListener(`click`, () => {
   onScaleDownButtonPressed(PictureEditScaleButton.BIGGER);
 });
@@ -258,6 +275,7 @@ pictureEditScaleButtonBigger.addEventListener(`click`, () => {
  * Наложение эффекта на изображение ----------------------------------------------------
  */
 
+// Объект для работы с эффетками
 const effects = {
   Properties: {
     none: {
@@ -314,6 +332,7 @@ const pictureEditEffectLevelPin = picturesSection.querySelector(`.effect-level__
 const effectsArray = Array.from(picturesSection.querySelectorAll(`.effects__radio`)).map((x) => x.value);
 const effectsClassNamesArray = effectsArray.map((x) => `${ClassNames.EFFECTS_PREVIEW}--${x}`);
 
+// Обработчик при смене эффекта
 const onEffectChange = (evt) => {
   if (!evt.target || !evt.target.matches(`.effects__radio`)) {
     return;
@@ -332,6 +351,7 @@ const onEffectChange = (evt) => {
 
 pictureEditEffectsFieldset.addEventListener(`change`, onEffectChange);
 
+// Обработчик при изменении слайдера уровня эффекта
 const onEffectLevelChange = () => {
   const normalizedEffectValue = pictureEditEffectLevelPin.offsetLeft / pictureEditEffectLevelPin.parentElement.offsetWidth;
   pictureEditUploadPreviewImage.style.filter = effects.getStyleFilter(normalizedEffectValue);
