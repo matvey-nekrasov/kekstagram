@@ -1,5 +1,9 @@
 'use strict';
 
+/**
+ * Глобальные константы --------------------------------------------------------------------------------------
+ */
+
 const PICTURES_COUNT = 25;
 
 const LikeCount = {
@@ -53,6 +57,21 @@ const PICTURE_DESCRIPTIONS = [
   `Было бы все в этой жизни так же просто, как растолстеть`
 ];
 
+const PictureEditScale = {
+  MIN: 0,
+  MAX: 100,
+  STEP: 25
+};
+
+let PictureEditScaleButton = {
+  SMALLER: 0,
+  BIGGER: 1
+}
+
+/**
+ * Служебные функции ---------------------------------------------------
+ */
+
 /**
  * Получение случайного элемента массива
  * @param {Array} items произвольный массив
@@ -69,6 +88,11 @@ const getRandomElementFromArray = (items) =>
  */
 const getRandomNumber = (min, max) =>
   Math.floor(Math.random() * (max - min + 1) + min);
+
+
+/**
+ * Генерация данных фотографий ---------------------------------------------------
+ */
 
 /**
 * Генерация массива комментариев из констант
@@ -139,3 +163,80 @@ const picturesData = generatePicturesDataArray(PICTURES_COUNT);
 const picturesFragment = renderPicturesToFragment(picturesData);
 const picturesContainer = document.querySelector(`.pictures`);
 picturesContainer.appendChild(picturesFragment);
+
+
+/**
+ * Загрузка изображения и показ формы редактирования ---------------------------------
+ */
+
+const bodyTag = document.querySelector(`body`);
+const uploadImageOverlay = picturesContainer.querySelector(`.img-upload__overlay`);
+const uploadFileInput = picturesContainer.querySelector(`#upload-file`);
+const uploadFileCloseButton = picturesContainer.querySelector(`#upload-cancel`);
+
+/**
+ * Обработчик нажатия Esc - закрывает попап с настройками
+ * @param {*} evt событие
+ */
+const onPopupEscPress = (evt) => {
+  if (evt.key === `Escape`) {
+    evt.preventDefault();
+    closePhotoEditWindow();
+  }
+};
+
+// Открытие окна выбора фотографии
+const openPhotoEditWindow = () => {
+  uploadImageOverlay.classList.remove(`hidden`);
+  bodyTag.classList.add(`modal-open`);
+  document.addEventListener(`keydown`, onPopupEscPress);
+};
+
+// Закрытие окна выбора фотографии
+const closePhotoEditWindow = () => {
+  uploadImageOverlay.classList.add(`hidden`);
+  bodyTag.classList.remove(`modal-open`);
+  uploadFileInput.value = ``;
+  document.removeEventListener(`keydown`, onPopupEscPress);
+};
+
+// Обработчик при изменении edit.value
+uploadFileInput.addEventListener(`change`, () => {
+  openPhotoEditWindow();
+});
+
+// Обработчик при нажатии на кнопку close popup
+uploadFileCloseButton.addEventListener(`click`, () => {
+  closePhotoEditWindow();
+});
+
+
+/**
+ * Редактирование изображения --------------------------
+ */
+
+const pictureEditScaleButtonSmaller = picturesContainer.querySelector(`.scale__control--smaller`);
+const pictureEditScaleButtonBigger = picturesContainer.querySelector(`.scale__control--bigger`);
+const pictureEditScaleTextBox = picturesContainer.querySelector(`.scale__control--value`);
+
+const onScaleDownButtonPressed = (buttonType) => {
+  const oldPercent = pictureEditScaleTextBox.value.slice(0, -1);
+  let newPercent;
+  switch (buttonType) {
+    case PictureEditScaleButton.SMALLER:
+      newPercent = Math.max(parseInt(oldPercent, 10) - PictureEditScale.STEP, PictureEditScale.MIN);
+      break;
+    case PictureEditScaleButton.BIGGER:
+      newPercent = Math.min(parseInt(oldPercent, 10) + PictureEditScale.STEP, PictureEditScale.MAX);
+      break;
+  }
+  pictureEditScaleTextBox.value = `${newPercent}%`;
+};
+
+pictureEditScaleButtonSmaller.addEventListener(`click`, () => {
+  onScaleDownButtonPressed(PictureEditScaleButton.SMALLER);
+});
+
+pictureEditScaleButtonBigger.addEventListener(`click`, () => {
+  onScaleDownButtonPressed(PictureEditScaleButton.BIGGER);
+});
