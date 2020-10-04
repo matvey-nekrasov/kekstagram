@@ -63,10 +63,14 @@ const PictureEditScale = {
   STEP: 25
 };
 
-let PictureEditScaleButton = {
+const PictureEditScaleButton = {
   SMALLER: 0,
   BIGGER: 1
-}
+};
+
+const ClassNames = {
+  EFFECTS_PREVIEW: `effects__preview`
+};
 
 /**
  * Служебные функции ---------------------------------------------------
@@ -161,8 +165,8 @@ const renderPicturesToFragment = (pictures) => {
 
 const picturesData = generatePicturesDataArray(PICTURES_COUNT);
 const picturesFragment = renderPicturesToFragment(picturesData);
-const picturesContainer = document.querySelector(`.pictures`);
-picturesContainer.appendChild(picturesFragment);
+const picturesSection = document.querySelector(`.pictures`);
+picturesSection.appendChild(picturesFragment);
 
 
 /**
@@ -170,9 +174,9 @@ picturesContainer.appendChild(picturesFragment);
  */
 
 const bodyTag = document.querySelector(`body`);
-const uploadImageOverlay = picturesContainer.querySelector(`.img-upload__overlay`);
-const uploadFileInput = picturesContainer.querySelector(`#upload-file`);
-const uploadFileCloseButton = picturesContainer.querySelector(`#upload-cancel`);
+const uploadImageOverlay = picturesSection.querySelector(`.img-upload__overlay`);
+const uploadFileInput = picturesSection.querySelector(`#upload-file`);
+const uploadFileCloseButton = picturesSection.querySelector(`#upload-cancel`);
 
 /**
  * Обработчик нажатия Esc - закрывает попап с настройками
@@ -219,11 +223,10 @@ uploadFileCloseButton.addEventListener(`click`, () => {
  * Масштаб ----------------------------------------------------
  */
 
-const pictureEditScaleButtonSmaller = picturesContainer.querySelector(`.scale__control--smaller`);
-const pictureEditScaleButtonBigger = picturesContainer.querySelector(`.scale__control--bigger`);
-const pictureEditScaleTextBox = picturesContainer.querySelector(`.scale__control--value`);
-const pictureEditUploadPreviewImage = picturesContainer.querySelector(`.img-upload__preview img`);
-
+const pictureEditScaleButtonSmaller = picturesSection.querySelector(`.scale__control--smaller`);
+const pictureEditScaleButtonBigger = picturesSection.querySelector(`.scale__control--bigger`);
+const pictureEditScaleTextBox = picturesSection.querySelector(`.scale__control--value`);
+const pictureEditUploadPreviewImage = picturesSection.querySelector(`.img-upload__preview img`);
 
 const onScaleDownButtonPressed = (buttonType) => {
   const oldPercent = parseInt(pictureEditScaleTextBox.value.slice(0, -1), 10);
@@ -254,3 +257,84 @@ pictureEditScaleButtonBigger.addEventListener(`click`, () => {
 /**
  * Наложение эффекта на изображение ----------------------------------------------------
  */
+
+const effects = {
+  Properties: {
+    none: {
+      FILTER_NAME: ``
+    },
+    chrome: {
+      FILTER_NAME: `grayscale`,
+      MIN: 0,
+      MAX: 1,
+      POSTFIX: ``
+    },
+    sepia: {
+      FILTER_NAME: `sepia`,
+      MIN: 0,
+      MAX: 1,
+      POSTFIX: ``
+    },
+    marvin: {
+      FILTER_NAME: `invert`,
+      MIN: 0,
+      MAX: 100,
+      POSTFIX: `%`
+    },
+    phobos: {
+      FILTER_NAME: `blur`,
+      MIN: 0,
+      MAX: 3,
+      POSTFIX: `px`
+    },
+    heat: {
+      FILTER_NAME: `brightness`,
+      MIN: 1,
+      MAX: 3,
+      POSTFIX: ``
+    }
+  },
+  currentEffect: `none`,
+  isSliderVisible() {
+    return this.Properties[this.currentEffect].FILTER_NAME !== ``;
+  },
+  getStyleFilter(normalizedValue = 1) {
+    const effectProperty = this.Properties[this.currentEffect];
+    const resultValue = (effectProperty.MAX - effectProperty.MIN) * normalizedValue + effectProperty.MIN;
+    if (!effectProperty.FILTER_NAME) {
+      return ``;
+    }
+    return `${effectProperty.FILTER_NAME}(${resultValue}${effectProperty.POSTFIX})`;
+  }
+};
+
+const pictureEditEffectsFieldset = picturesSection.querySelector(`.effects`);
+const pictureEditEffectLevelSlider = picturesSection.querySelector(`.effect-level`);
+const pictureEditEffectLevelPin = picturesSection.querySelector(`.effect-level__pin`);
+const effectsArray = Array.from(picturesSection.querySelectorAll(`.effects__radio`)).map((x) => x.value);
+const effectsClassNamesArray = effectsArray.map((x) => `${ClassNames.EFFECTS_PREVIEW}--${x}`);
+
+const onEffectChange = (evt) => {
+  if (!evt.target || !evt.target.matches(`.effects__radio`)) {
+    return;
+  }
+  const effectName = evt.target.value;
+  effects.currentEffect = effectName;
+  pictureEditUploadPreviewImage.classList.remove(...effectsClassNamesArray);
+  pictureEditUploadPreviewImage.classList.add(`${ClassNames.EFFECTS_PREVIEW}--${effectName}`);
+  pictureEditUploadPreviewImage.style.filter = ``;
+  if (effects.isSliderVisible()) {
+    pictureEditEffectLevelSlider.classList.remove(`hidden`);
+  } else {
+    pictureEditEffectLevelSlider.classList.add(`hidden`);
+  }
+};
+
+pictureEditEffectsFieldset.addEventListener(`change`, onEffectChange);
+
+const onEffectLevelChange = () => {
+  const normalizedEffectValue = pictureEditEffectLevelPin.offsetLeft / pictureEditEffectLevelPin.parentElement.offsetWidth;
+  pictureEditUploadPreviewImage.style.filter = effects.getStyleFilter(normalizedEffectValue);
+};
+
+pictureEditEffectLevelPin.addEventListener(`mouseup`, onEffectLevelChange);
