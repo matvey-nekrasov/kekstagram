@@ -57,13 +57,13 @@ const PICTURE_DESCRIPTIONS = [
   `Было бы все в этой жизни так же просто, как растолстеть`
 ];
 
-const PictureEditScale = {
+const PictureScaleChange = {
   MIN: 25,
   MAX: 100,
   STEP: 25
 };
 
-const PictureEditScaleButton = {
+const PictureScaleChangeButton = {
   SMALLER: 0,
   BIGGER: 1
 };
@@ -245,41 +245,41 @@ uploadFileCloseButton.addEventListener(`click`, () => {
  * Масштаб ----------------------------------------------------
  */
 
-const pictureEditScaleButtonSmaller = picturesSection.querySelector(`.scale__control--smaller`);
-const pictureEditScaleButtonBigger = picturesSection.querySelector(`.scale__control--bigger`);
-const pictureEditScaleTextBox = picturesSection.querySelector(`.scale__control--value`);
+const pictureScaleChangeButtonSmaller = picturesSection.querySelector(`.scale__control--smaller`);
+const pictureScaleChangeButtonBigger = picturesSection.querySelector(`.scale__control--bigger`);
+const pictureScaleChangeTextBox = picturesSection.querySelector(`.scale__control--value`);
 const pictureEditUploadPreviewImage = picturesSection.querySelector(`.img-upload__preview img`);
 
 /**
  * Обработчик нажатий на кнопки изменения масштаба + / -
  * @param {number} buttonType
  */
-const onScaleDownButtonPressed = (buttonType) => {
-  const oldPercent = parseInt(pictureEditScaleTextBox.value.slice(0, -1), 10);
+const onScaleChangeButtonPressed = (buttonType) => {
+  const oldPercent = parseInt(pictureScaleChangeTextBox.value.slice(0, -1), 10);
   let newPercent;
   switch (buttonType) {
-    case PictureEditScaleButton.SMALLER:
-      newPercent = Math.max(oldPercent - PictureEditScale.STEP, PictureEditScale.MIN);
+    case PictureScaleChangeButton.SMALLER:
+      newPercent = Math.max(oldPercent - PictureScaleChange.STEP, PictureScaleChange.MIN);
       break;
-    case PictureEditScaleButton.BIGGER:
-      newPercent = Math.min(oldPercent + PictureEditScale.STEP, PictureEditScale.MAX);
+    case PictureScaleChangeButton.BIGGER:
+      newPercent = Math.min(oldPercent + PictureScaleChange.STEP, PictureScaleChange.MAX);
       break;
   }
   if (newPercent === oldPercent) {
     return;
   }
-  pictureEditScaleTextBox.value = `${newPercent}%`;
+  pictureScaleChangeTextBox.value = `${newPercent}%`;
   pictureEditUploadPreviewImage.style.transform = `scale(${newPercent / 100})`;
 };
 
 // Нажатие на -
-pictureEditScaleButtonSmaller.addEventListener(`click`, () => {
-  onScaleDownButtonPressed(PictureEditScaleButton.SMALLER);
+pictureScaleChangeButtonSmaller.addEventListener(`click`, () => {
+  onScaleChangeButtonPressed(PictureScaleChangeButton.SMALLER);
 });
 
 // Нажатие на +
-pictureEditScaleButtonBigger.addEventListener(`click`, () => {
-  onScaleDownButtonPressed(PictureEditScaleButton.BIGGER);
+pictureScaleChangeButtonBigger.addEventListener(`click`, () => {
+  onScaleChangeButtonPressed(PictureScaleChangeButton.BIGGER);
 });
 
 /**
