@@ -741,6 +741,7 @@ main {
   color: #000000;
 
   border-radius: 5px;
+  resize: none;
 }
 
 
