@@ -177,6 +177,7 @@ const bodyTag = document.querySelector(`body`);
 const uploadImageOverlay = picturesSection.querySelector(`.img-upload__overlay`);
 const uploadFileInput = picturesSection.querySelector(`#upload-file`);
 const uploadFileCloseButton = picturesSection.querySelector(`#upload-cancel`);
+const textEditHashtag = picturesSection.querySelector(`.text__hashtags`);
 const textEditComment = picturesSection.querySelector(`.text__description`);
 
 /**
@@ -190,12 +191,22 @@ const onPopupEscPress = (evt) => {
   }
 };
 
-// Запрет закрытия окна setup при фокусе на поле для воода комментария
+// Запрет закрытия окна setup при фокусе на поле для ввода хэштега
+textEditHashtag.addEventListener(`focus`, () => {
+  document.removeEventListener(`keydown`, onPopupEscPress);
+});
+
+// Добавление закрытия окна setup при уходе фокуса с поля для ввода хэштега
+textEditHashtag.addEventListener(`blur`, () => {
+  document.addEventListener(`keydown`, onPopupEscPress);
+});
+
+// Запрет закрытия окна setup при фокусе на поле для ввода комментария
 textEditComment.addEventListener(`focus`, () => {
   document.removeEventListener(`keydown`, onPopupEscPress);
 });
 
-// Добавление закрытия окна setup при уходе фокуса с поля для воода комментария
+// Добавление закрытия окна setup при уходе фокуса с поля для ввода комментария
 textEditComment.addEventListener(`blur`, () => {
   document.addEventListener(`keydown`, onPopupEscPress);
 });
@@ -358,3 +369,54 @@ const onEffectLevelChange = () => {
 };
 
 pictureEditEffectLevelPin.addEventListener(`mouseup`, onEffectLevelChange);
+
+
+/**
+ * Хэш-теги ----------------------------------------------------
+ */
+
+const hastagsCheckValidity = (inputString) => {
+  // Убираются все лишние пробелы из строки
+  const trimmed = inputString.replace(/\s+/g, ` `).trim();
+
+  if (trimmed.length === 0) {
+    return ``;
+  }
+
+  const splittedArray = trimmed.split(` `);
+  if (splittedArray.some((x) => x[0] !== `#`)) {
+    return `Хэш-тег должен начинаться с символа # (решётка)`;
+  }
+
+  const noLatticeArray = splittedArray.map((x) => x.substring(1));
+  if (noLatticeArray.some((x) => x.length === 0)) {
+    return `Хеш-тег не может состоять только из одной решётки`;
+  }
+
+  const re = /[^\w]/;
+  if (noLatticeArray.some((x) => re.test(x))) {
+    return `Строка после решётки должна состоять из букв и чисел и не может содержать пробелы, спецсимволы (#, @, $ и т. п.), символы пунктуации (тире, дефис, запятая и т. п.), эмодзи и т. д.`;
+  }
+
+  if (splittedArray.some((x) => x.length > 20)) {
+    return `Максимальная длина одного хэш-тега 20 символов, включая решётку`;
+  }
+
+  if (splittedArray.length > 5) {
+    return `Нельзя указать больше пяти хэш-тегов`;
+  }
+
+  const lowercaseArray = splittedArray.map((x) => x.toLowerCase());
+  const duplicatesArray = lowercaseArray.filter((item, index) => lowercaseArray.indexOf(item) !== index);
+  if (duplicatesArray.length !== 0) {
+    return `Один и тот же хэш-тег не может быть использован дважды (хэш-теги нечувствительны к регистру)`;
+  }
+
+  return ``;
+};
+
+textEditHashtag.addEventListener(`input`, () => {
+  const validity = hastagsCheckValidity(textEditHashtag.value);
+  textEditHashtag.setCustomValidity(validity);
+  textEditHashtag.reportValidity();
+});
