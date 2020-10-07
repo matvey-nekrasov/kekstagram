@@ -1,3 +1,4 @@
+// Точка входа. Модуль, который связывает другие модули
 'use strict';
 
 /**
@@ -73,28 +74,6 @@ const ClassNames = {
 };
 
 /**
- * Служебные функции ---------------------------------------------------
- */
-
-/**
- * Получение случайного элемента массива
- * @param {Array} items произвольный массив
- * @return {*} случайный элемент массива
- */
-const getRandomElementFromArray = (items) =>
-  items[Math.floor(Math.random() * items.length)];
-
-/**
- * Получение случайного целого числа в диапазоне [min, max]
- * @param {number} min
- * @param {number} max
- * @return {number}
- */
-const getRandomNumber = (min, max) =>
-  Math.floor(Math.random() * (max - min + 1) + min);
-
-
-/**
  * Генерация данных фотографий ---------------------------------------------------
  */
 
@@ -107,9 +86,9 @@ const generateComments = (count) => {
   const comments = [];
   for (let i = 0; i < count; i++) {
     const comment = {
-      avatar: `img/avatar-${getRandomNumber(AvatarCount.MIN, AvatarCount.MAX)}.svg`,
-      message: getRandomElementFromArray(COMMENT_MESSAGES),
-      name: getRandomElementFromArray(COMMENT_AUTHOR_NAMES)
+      avatar: `img/avatar-${window.util.getRandomNumber(AvatarCount.MIN, AvatarCount.MAX)}.svg`,
+      message: window.util.getRandomElementFromArray(COMMENT_MESSAGES),
+      name: window.util.getRandomElementFromArray(COMMENT_AUTHOR_NAMES)
     };
     comments.push(comment);
   }
@@ -126,9 +105,9 @@ const generatePicturesDataArray = (count) => {
   for (let i = 0; i < count; i++) {
     const picture = {
       url: `photos/${i + 1}.jpg`,
-      description: getRandomElementFromArray(PICTURE_DESCRIPTIONS),
-      likes: getRandomNumber(LikeCount.MIN, LikeCount.MAX),
-      comments: generateComments(getRandomNumber(CommentCount.MIN, CommentCount.MAX))
+      description: window.util.getRandomElementFromArray(PICTURE_DESCRIPTIONS),
+      likes: window.util.getRandomNumber(LikeCount.MIN, LikeCount.MAX),
+      comments: generateComments(window.util.getRandomNumber(CommentCount.MIN, CommentCount.MAX))
     };
     pictures.push(picture);
   }
