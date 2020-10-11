@@ -2,8 +2,6 @@
 'use strict';
 
 (() => {
-  const PICTURES_COUNT = 25;
-
   /**
    * Заполнение шаблона #picture данными
    * @param {Object} pictureData
@@ -32,8 +30,26 @@
     return fragment;
   };
 
-  const picturesData = window.data.generatePicturesDataArray(PICTURES_COUNT);
-  const picturesFragment = renderPicturesToFragment(picturesData);
-  const picturesSection = document.querySelector(`.pictures`);
-  picturesSection.appendChild(picturesFragment);
+  // Колбэк при получении фотографий при запуске
+  const backendLoadOnLoad = (picturesData) => {
+    const picturesFragment = renderPicturesToFragment(picturesData);
+    const picturesSection = document.querySelector(`.pictures`);
+    picturesSection.appendChild(picturesFragment);
+  };
+
+  // Колбэк при ошибке запроса
+  const backendOnError = (errorMessage) => {
+    const node = document.createElement(`div`);
+    node.style = `z-index: 100; margin: 0 auto; text-align: center; background-color: #FE4C4C;`;
+    node.style.position = `absolute`;
+    node.style.left = 0;
+    node.style.right = 0;
+    node.style.fontSize = `30px`;
+    node.style.lineHeight = 1.5;
+
+    node.textContent = errorMessage;
+    document.body.insertAdjacentElement(`afterbegin`, node);
+  };
+
+  window.backend.load(backendLoadOnLoad, backendOnError);
 })();
