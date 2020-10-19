@@ -8,7 +8,7 @@
 
   // Объект для работы с эффетками
   const effects = {
-    Properties: {
+    properties: {
       none: {
         FILTER_NAME: ``
       },
@@ -45,10 +45,10 @@
     },
     currentEffect: `none`,
     isSliderVisible() {
-      return this.Properties[this.currentEffect].FILTER_NAME !== ``;
+      return this.properties[this.currentEffect].FILTER_NAME !== ``;
     },
     getStyleFilter(normalizedValue = 1) {
-      const effectProperty = this.Properties[this.currentEffect];
+      const effectProperty = this.properties[this.currentEffect];
       const resultValue = (effectProperty.MAX - effectProperty.MIN) * normalizedValue + effectProperty.MIN;
       if (!effectProperty.FILTER_NAME) {
         return ``;
