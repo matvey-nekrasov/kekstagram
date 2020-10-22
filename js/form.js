@@ -28,7 +28,7 @@
     document.removeEventListener(`keydown`, onPopupEscPress);
   });
 
-  // Добавление закрытия окна setup при уходе фокуса с поля для ввода хэштега
+  // Добавление обработчика закрытия окна setup при уходе фокуса с поля для ввода хэштега
   textEditHashtag.addEventListener(`blur`, () => {
     document.addEventListener(`keydown`, onPopupEscPress);
   });
@@ -38,7 +38,7 @@
     document.removeEventListener(`keydown`, onPopupEscPress);
   });
 
-  // Добавление закрытия окна setup при уходе фокуса с поля для ввода комментария
+  // Добавление обработчика закрытия окна setup при уходе фокуса с поля для ввода комментария
   textEditComment.addEventListener(`blur`, () => {
     document.addEventListener(`keydown`, onPopupEscPress);
   });

@@ -3,21 +3,21 @@
 
 (() => {
   let picturesDataLocal = [];
+  let picturesDataLocalOrder = [];
 
   const renderByOrder = (newOrder) => {
-    let picturesDataNewOrder = [];
     switch (newOrder) {
       case window.miniaturesOrder.OrderType.DEFAULT:
-        picturesDataNewOrder = picturesDataLocal;
+        picturesDataLocalOrder = picturesDataLocal;
         break;
       case window.miniaturesOrder.OrderType.RANDOM:
         // Перемешать копию массива, и взять первые 10 элементов
-        picturesDataNewOrder = window.util.shuffleArray(picturesDataLocal).slice(0, 10);
+        picturesDataLocalOrder = window.util.shuffleArray(picturesDataLocal).slice(0, 10);
         break;
       case window.miniaturesOrder.OrderType.DISCUSSED:
         // Отсортировать по количеству комментариев, если одинаково, то лайков
-        picturesDataNewOrder = picturesDataLocal.slice();
-        picturesDataNewOrder.sort((left, right) => {
+        picturesDataLocalOrder = picturesDataLocal.slice();
+        picturesDataLocalOrder.sort((left, right) => {
           let diff = right.comments.length - left.comments.length;
           if (diff === 0) {
             diff = right.likes - left.likes;
@@ -27,12 +27,13 @@
         break;
     }
 
-    window.miniaturesRender.render(picturesDataNewOrder);
+    window.miniaturesRender.render(picturesDataLocalOrder);
   };
 
   // Колбэк при получении фотографий при запуске
   const onSiteEntered = (picturesData) => {
     picturesDataLocal = picturesData;
+    picturesDataLocalOrder = picturesDataLocal;
     renderByOrder(window.miniaturesOrder.OrderType.DEFAULT);
 
     // Показ меню вверху страницы: по умолчанию, случайные, осуждаемые
@@ -40,9 +41,12 @@
     imgFilters.classList.remove(`img-filters--inactive`);
   };
 
+  const getPicturesDataLocalOrder = () => picturesDataLocalOrder;
+
   window.backend.load(onSiteEntered, window.util.onError);
 
   window.minitaures = {
-    renderByOrder
+    renderByOrder,
+    getPicturesDataLocalOrder
   };
 })();
