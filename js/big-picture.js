@@ -4,7 +4,6 @@
 (() => {
   // Обработчик при клике на миниатюру - открытие полноразмерного окна
   const onSmallPictureClick = (evt) => {
-    window.console.log(evt.target);
     if (!evt.target) {
       return;
     }

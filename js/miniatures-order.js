@@ -11,7 +11,7 @@
   const filtersSection = document.querySelector(`.img-filters`);
   const filtersForm = filtersSection.querySelector(`.img-filters__form`);
 
-  const onOrderChange = (evt) => {
+  const changeOrder = (evt) => {
     switch (evt.target.id) {
       case `filter-default`:
         window.minitaures.renderByOrder(OrderType.DEFAULT);
@@ -27,7 +27,7 @@
     }
   };
 
-  const onOrderChangeDebounced = window.debounce(onOrderChange);
+  const changeOrderDebounced = window.debounce(changeOrder);
 
   filtersForm.addEventListener(`click`, (evt) => {
     // Если кликнули не кнопку, или не активную кнопку, то выход
@@ -40,7 +40,7 @@
     buttons.forEach((button) => button.classList.remove(`img-filters__button--active`));
     evt.target.classList.add(`img-filters__button--active`);
 
-    onOrderChangeDebounced(evt);
+    changeOrderDebounced(evt);
   });
 
   window.miniaturesOrder = {
