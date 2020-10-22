@@ -30,14 +30,14 @@
 
   // Сброс масштаба
   const pictureScaleReset = () => {
-    pictureScaleSet(100);
+    pictureScaleSet(PictureScaleChange.MAX);
   };
 
   /**
    * Обработчик нажатий на кнопки изменения масштаба + / -
    * @param {number} buttonType
    */
-  const onScaleChangeButtonPressed = (buttonType) => {
+  const changeScale = (buttonType) => {
     const oldPercent = parseInt(pictureScaleChangeTextBox.value.slice(0, -1), 10);
     let newPercent;
     switch (buttonType) {
@@ -56,12 +56,12 @@
 
   // Нажатие на -
   pictureScaleChangeButtonSmaller.addEventListener(`click`, () => {
-    onScaleChangeButtonPressed(PictureScaleChangeButton.SMALLER);
+    changeScale(PictureScaleChangeButton.SMALLER);
   });
 
   // Нажатие на +
   pictureScaleChangeButtonBigger.addEventListener(`click`, () => {
-    onScaleChangeButtonPressed(PictureScaleChangeButton.BIGGER);
+    changeScale(PictureScaleChangeButton.BIGGER);
   });
 
   window.formScale = {

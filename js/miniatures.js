@@ -2,54 +2,47 @@
 'use strict';
 
 (() => {
-  /**
-   * Заполнение шаблона #picture данными
-   * @param {Object} pictureData
-   * @return {Object} клонированный шаблон, заполненный данными
-   */
-  const renderPictureTemplate = (pictureData) => {
-    const pictureTemplate = document.querySelector(`#picture`).content.querySelector(`.picture`);
-    const picture = pictureTemplate.cloneNode(true);
-    picture.querySelector(`.picture__img`).src = pictureData.url;
-    picture.querySelector(`.picture__comments`).innerText = pictureData.comments.length.toString();
-    picture.querySelector(`.picture__likes`).innerText = pictureData.likes.toString();
-    return picture;
-  };
+  let picturesDataLocal = [];
 
-  /**
-   * Добавление фотографий в DocumentFragment
-   * @param {Array} pictures массив объектов фотографий
-   * @return {*} DocumentFragment с фотографиями
-   */
-  const renderPicturesToFragment = (pictures) => {
-    const fragment = document.createDocumentFragment();
-    pictures.forEach((picture) => {
-      const pictureTemplate = renderPictureTemplate(picture);
-      fragment.appendChild(pictureTemplate);
-    });
-    return fragment;
+  const renderByOrder = (newOrder) => {
+    let picturesDataNewOrder = [];
+    switch (newOrder) {
+      case window.miniaturesOrder.OrderType.DEFAULT:
+        picturesDataNewOrder = picturesDataLocal;
+        break;
+      case window.miniaturesOrder.OrderType.RANDOM:
+        // Перемешать копию массива, и взять первые 10 элементов
+        picturesDataNewOrder = window.util.shuffleArray(picturesDataLocal).slice(0, 10);
+        break;
+      case window.miniaturesOrder.OrderType.DISCUSSED:
+        // Отсортировать по количеству комментариев, если одинаково, то лайков
+        picturesDataNewOrder = picturesDataLocal.slice();
+        picturesDataNewOrder.sort((left, right) => {
+          let diff = right.comments.length - left.comments.length;
+          if (diff === 0) {
+            diff = right.likes - left.likes;
+          }
+          return diff;
+        });
+        break;
+    }
+
+    window.miniaturesRender.render(picturesDataNewOrder);
   };
 
   // Колбэк при получении фотографий при запуске
-  const backendLoadOnLoad = (picturesData) => {
-    const picturesFragment = renderPicturesToFragment(picturesData);
-    const picturesSection = document.querySelector(`.pictures`);
-    picturesSection.appendChild(picturesFragment);
+  const onSiteEntered = (picturesData) => {
+    picturesDataLocal = picturesData;
+    renderByOrder(window.miniaturesOrder.OrderType.DEFAULT);
+
+    // Показ меню вверху страницы: по умолчанию, случайные, осуждаемые
+    const imgFilters = document.querySelector(`.img-filters`);
+    imgFilters.classList.remove(`img-filters--inactive`);
   };
 
-  // Колбэк при ошибке запроса
-  const backendOnError = (errorMessage) => {
-    const node = document.createElement(`div`);
-    node.style = `z-index: 100; margin: 0 auto; text-align: center; background-color: #FE4C4C;`;
-    node.style.position = `absolute`;
-    node.style.left = 0;
-    node.style.right = 0;
-    node.style.fontSize = `30px`;
-    node.style.lineHeight = 1.5;
+  window.backend.load(onSiteEntered, window.util.onError);
 
-    node.textContent = errorMessage;
-    document.body.insertAdjacentElement(`afterbegin`, node);
+  window.minitaures = {
+    renderByOrder
   };
-
-  window.backend.load(backendLoadOnLoad, backendOnError);
 })();

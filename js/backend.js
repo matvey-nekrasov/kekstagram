@@ -1,6 +1,6 @@
 'use strict';
 
-(function () {
+(() => {
   const UrlList = {
     URL_LOAD: `https://21.javascript.pages.academy/kekstagram/data`
   };

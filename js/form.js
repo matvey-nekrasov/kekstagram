@@ -19,7 +19,6 @@
    */
   const onPopupEscPress = (evt) => {
     if (evt.key === `Escape`) {
-      evt.preventDefault();
       closePhotoEditWindow();
     }
   };
