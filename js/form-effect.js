@@ -61,7 +61,9 @@
   const pictureUploadPreviewImage = picturesSection.querySelector(`.img-upload__preview img`);
   const pictureEffectFieldset = picturesSection.querySelector(`.effects`);
   const pictureEffectLevelSlider = picturesSection.querySelector(`.effect-level`);
+  const pictureEffectLevelLine = picturesSection.querySelector(`.effect-level__line`);
   const pictureEffectLevelPin = picturesSection.querySelector(`.effect-level__pin`);
+  const pictureEffectLevelDepth = picturesSection.querySelector(`.effect-level__depth`);
   const effectsArray = Array.from(picturesSection.querySelectorAll(`.effects__radio`)).map((x) => x.value);
 
   // Обработчик при смене эффекта
@@ -75,26 +77,57 @@
     pictureUploadPreviewImage.classList.add(`${ClassNames.EFFECTS_PREVIEW}--${effectName}`);
     if (effects.isSliderVisible()) {
       pictureEffectLevelSlider.classList.remove(`hidden`);
+      pictureEffectLevelUpdate(); // Установить уровень эффекта в соответствии с положением ползунка по-умолчанию
     } else {
       pictureEffectLevelSlider.classList.add(`hidden`);
     }
   };
 
-  pictureEffectFieldset.addEventListener(`change`, onEffectChange);
-
-  // Обработчик при изменении слайдера уровня эффекта
-  const onEffectLevelChange = () => {
-    const normalizedEffectValue = pictureEffectLevelPin.offsetLeft / pictureEffectLevelPin.parentElement.offsetWidth;
-    pictureUploadPreviewImage.style.filter = effects.getStyleFilter(normalizedEffectValue);
-  };
-
-  pictureEffectLevelPin.addEventListener(`mouseup`, onEffectLevelChange);
-
   const pictureEffectReset = () => {
     const effectsClassNamesArray = effectsArray.map((x) => `${ClassNames.EFFECTS_PREVIEW}--${x}`);
     pictureUploadPreviewImage.classList.remove(...effectsClassNamesArray);
     pictureUploadPreviewImage.style.filter = ``;
+    pictureEffectLevelSlider.classList.add(`hidden`);
   };
+
+  // Обработчик при изменении слайдера уровня эффекта
+  const pictureEffectLevelUpdate = () => {
+    const normalizedEffectValue = pictureEffectLevelPin.offsetLeft / pictureEffectLevelPin.parentElement.offsetWidth;
+    pictureUploadPreviewImage.style.filter = effects.getStyleFilter(normalizedEffectValue);
+  };
+
+  const onMouseDown = (evt) => {
+    evt.preventDefault();
+
+    const boundaries = {
+      minPinLeft: 0,
+      maxPinLeft: pictureEffectLevelLine.offsetWidth
+    };
+
+    let startCoordX = evt.clientX;
+
+    const onMouseMove = (moveEvt) => {
+      moveEvt.preventDefault();
+      const shiftX = startCoordX - moveEvt.clientX;
+      startCoordX = moveEvt.clientX;
+      pictureEffectLevelPin.style.left = `${Math.min(Math.max(pictureEffectLevelPin.offsetLeft - shiftX, boundaries.minPinLeft), boundaries.maxPinLeft)}px`;
+      pictureEffectLevelDepth.style.width = `${Math.min(Math.max(pictureEffectLevelPin.offsetLeft - shiftX, boundaries.minPinLeft), boundaries.maxPinLeft)}px`;
+      pictureEffectLevelUpdate();
+    };
+
+    const onMouseUp = (upEvt) => {
+      upEvt.preventDefault();
+
+      document.removeEventListener(`mousemove`, onMouseMove);
+      document.removeEventListener(`mouseup`, onMouseUp);
+    };
+
+    document.addEventListener(`mousemove`, onMouseMove);
+    document.addEventListener(`mouseup`, onMouseUp);
+  };
+
+  pictureEffectFieldset.addEventListener(`change`, onEffectChange);
+  pictureEffectLevelPin.addEventListener(`mousedown`, onMouseDown);
 
   window.formEffect = {
     reset: pictureEffectReset

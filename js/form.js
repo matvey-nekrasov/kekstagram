@@ -5,6 +5,8 @@
  * Загрузка изображения и показ формы редактирования ---------------------------------
  */
 (() => {
+  const EFFECT_DEFAULT_VALUE = `20%`;
+
   const picturesSection = document.querySelector(`.pictures`);
   const bodyTag = document.querySelector(`body`);
   const uploadImageOverlay = picturesSection.querySelector(`.img-upload__overlay`);
@@ -12,6 +14,8 @@
   const uploadFileCloseButton = picturesSection.querySelector(`#upload-cancel`);
   const textEditHashtag = picturesSection.querySelector(`.text__hashtags`);
   const textEditComment = picturesSection.querySelector(`.text__description`);
+  const pictureEffectLevelPin = picturesSection.querySelector(`.effect-level__pin`);
+  const pictureEffectLevelDepth = picturesSection.querySelector(`.effect-level__depth`);
 
   /**
    * Обработчик нажатия Esc - закрывает попап с настройками
@@ -58,6 +62,10 @@
     picturesSection.querySelector(`.effects__radio`).checked = true; // Сброс - установить первый элемент checked
     window.formScale.reset();
     window.formEffect.reset();
+    textEditHashtag.value = ``;
+    textEditComment.value = ``;
+    pictureEffectLevelPin.style.left = EFFECT_DEFAULT_VALUE;
+    pictureEffectLevelDepth.style.width = EFFECT_DEFAULT_VALUE;
     document.removeEventListener(`keydown`, onPopupEscPress);
   };
 
