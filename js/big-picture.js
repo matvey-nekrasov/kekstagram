@@ -4,22 +4,31 @@
 (() => {
   // Обработчик при клике на миниатюру - открытие полноразмерного окна
   const onSmallPictureClick = (evt) => {
-    if (!evt.target || !evt.target.matches(`.picture__img`)) {
+    window.console.log(evt.target);
+    if (!evt.target) {
       return;
     }
 
+    // Если происходит клик - то в evt <img>
+    if (evt.target.matches(`.picture__img`)) {
+      openBigPictureWindow(evt.target);
+    }
+
+    // Если нажат Enter - то в evt <a>
+    if (evt.target.matches(`.picture`)) {
+      openBigPictureWindow(evt.target.querySelector(`.picture__img`));
+    }
+  };
+
+
+  const openBigPictureWindow = (element) => {
     // Добавить обработчик клика на крестик
     bigPictureCloseButton.addEventListener(`click`, closeBigPictureWindow);
     document.addEventListener(`keydown`, onEscPress);
 
-    // Определение индекса в массиве picturesDataLocalOrder, по которому произошёл клик
     const pictures = picturesSection.querySelectorAll(`.picture__img`);
-    let indexInDataArray;
-    pictures.forEach((picture, i) => {
-      if (evt.target === picture) {
-        indexInDataArray = i;
-      }
-    });
+    // Индекс в DOM равен индексу в массиве picturesDataLocalOrder
+    const indexInDataArray = Array.from(pictures).indexOf(element);
 
     const pictureData = window.minitaures.getPicturesDataLocalOrder()[indexInDataArray];
     const bigPictureImg = bigPictureSection.querySelector(`.big-picture__img img`);
@@ -44,7 +53,7 @@
             <p class="social__text">${commentData.message}</p>
           </li>
         `;
-      socialCommentsList.insertAdjacentHTML(`afterbegin`, socialComment);
+      socialCommentsList.insertAdjacentHTML(`beforeend`, socialComment);
     });
 
     // Задание 3-2. Спрячьте блоки счётчика комментариев .social__comment-count и загрузки новых комментариев
@@ -80,6 +89,6 @@
 
   const picturesSection = document.querySelector(`.pictures`);
   const bigPictureSection = document.querySelector(`.big-picture`);
-  picturesSection.addEventListener(`click`, onSmallPictureClick);
   const bigPictureCloseButton = bigPictureSection.querySelector(`#picture-cancel`);
+  picturesSection.addEventListener(`click`, onSmallPictureClick);
 })();
