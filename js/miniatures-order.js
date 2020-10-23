@@ -27,9 +27,7 @@
     }
   };
 
-  const changeOrderDebounced = window.debounce(changeOrder);
-
-  filtersForm.addEventListener(`click`, (evt) => {
+  const onClick = (evt) => {
     // Если кликнули не кнопку, или не активную кнопку, то выход
     if (!evt.target || !evt.target.matches(`.img-filters__button`) || evt.target.matches(`.img-filters__button--active`)) {
       return;
@@ -41,7 +39,11 @@
     evt.target.classList.add(`img-filters__button--active`);
 
     changeOrderDebounced(evt);
-  });
+  };
+
+  const changeOrderDebounced = window.debounce(changeOrder);
+
+  filtersForm.addEventListener(`click`, onClick);
 
   window.miniaturesOrder = {
     OrderType
