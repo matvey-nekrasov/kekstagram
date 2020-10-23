@@ -76,6 +76,8 @@ const onEffectChange = (evt) => {
   pictureUploadPreviewImage.classList.add(`${ClassNames.EFFECTS_PREVIEW}--${effectName}`);
   if (effects.isSliderVisible()) {
     pictureEffectLevelSlider.classList.remove(`hidden`);
+    pictureEffectLevelPin.style.left = window.form.EFFECT_DEFAULT_VALUE;
+    pictureEffectLevelDepth.style.width = window.form.EFFECT_DEFAULT_VALUE;
     pictureEffectLevelUpdate(); // Установить уровень эффекта в соответствии с положением ползунка по-умолчанию
   } else {
     pictureEffectLevelSlider.classList.add(`hidden`);

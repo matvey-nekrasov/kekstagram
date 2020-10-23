@@ -30,7 +30,7 @@ const renderByOrder = (newOrder) => {
 };
 
 // Колбэк при получении фотографий при запуске
-const onSiteEntered = (picturesData) => {
+const onLoaded = (picturesData) => {
   picturesDataLocal = picturesData;
   picturesDataLocalOrder = picturesDataLocal;
   renderByOrder(window.miniaturesOrder.OrderType.DEFAULT);
@@ -42,7 +42,7 @@ const onSiteEntered = (picturesData) => {
 
 const getPicturesDataLocalOrder = () => picturesDataLocalOrder;
 
-window.backend.loadMiniatures(onSiteEntered, window.util.onError);
+window.backend.loadMiniatures(onLoaded, window.util.onError);
 
 window.minitaures = {
   renderByOrder,

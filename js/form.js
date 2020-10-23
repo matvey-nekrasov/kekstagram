@@ -1,7 +1,7 @@
 // Модуль, который работает с формой редактирования изображения
 'use strict';
 
-const EFFECT_DEFAULT_VALUE = `20%`;
+const EFFECT_DEFAULT_VALUE = `100%`;
 
 const picturesSection = document.querySelector(`.pictures`);
 const body = document.querySelector(`body`);
@@ -50,7 +50,7 @@ const openPictureEditWindow = () => {
   });
 
   reader.readAsDataURL(file);
-
+  resetFormToDefaultState();
   uploadImageOverlay.classList.remove(`hidden`);
   body.classList.add(`modal-open`);
   document.addEventListener(`keydown`, onPopupEscPress);
@@ -108,5 +108,6 @@ uploadFileCloseButton.addEventListener(`click`, () => {
 });
 
 window.form = {
-  closePictureEditWindow
+  closePictureEditWindow,
+  EFFECT_DEFAULT_VALUE
 };
