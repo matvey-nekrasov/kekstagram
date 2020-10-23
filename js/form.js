@@ -12,6 +12,9 @@ const textEditHashtag = picturesSection.querySelector(`.text__hashtags`);
 const textEditComment = picturesSection.querySelector(`.text__description`);
 const pictureEffectLevelPin = picturesSection.querySelector(`.effect-level__pin`);
 const pictureEffectLevelDepth = picturesSection.querySelector(`.effect-level__depth`);
+const preview = picturesSection.querySelector(`.img-upload__preview img`);
+const effectsPreviewItems = picturesSection.querySelectorAll(`.effects__preview`);
+
 
 /**
  * Обработчик нажатия Esc - закрывает попап с настройками
@@ -25,6 +28,29 @@ const onPopupEscPress = (evt) => {
 
 // Открытие окна выбора фотографии
 const openPictureEditWindow = () => {
+  const FILE_TYPES = [`gif`, `jpg`, `jpeg`, `png`];
+
+  const file = (uploadFileInput.files[0]);
+  const fileName = file.name.toLowerCase();
+  const isMatches = FILE_TYPES.some((fileType) => {
+    return fileName.endsWith(fileType);
+  });
+
+  if (!isMatches) {
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.addEventListener(`load`, () => {
+    preview.src = reader.result;
+
+    effectsPreviewItems.forEach((item) => {
+      item.style.backgroundImage = `url(${reader.result})`;
+    });
+  });
+
+  reader.readAsDataURL(file);
+
   uploadImageOverlay.classList.remove(`hidden`);
   body.classList.add(`modal-open`);
   document.addEventListener(`keydown`, onPopupEscPress);
