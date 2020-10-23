@@ -43,7 +43,7 @@
 
   const getPicturesDataLocalOrder = () => picturesDataLocalOrder;
 
-  window.backend.load(onSiteEntered, window.util.onError);
+  window.backend.loadMiniatures(onSiteEntered, window.util.onError);
 
   window.minitaures = {
     renderByOrder,

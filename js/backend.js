@@ -2,14 +2,15 @@
 
 (() => {
   const UrlList = {
-    URL_LOAD: `https://21.javascript.pages.academy/kekstagram/data`
+    URL_LOAD_MINIATURES: `https://21.javascript.pages.academy/kekstagram/data`,
+    URL_UPLOAD_PICTURE: `https://javascript.pages.academy/kekstagram`
   };
   const StatusCode = {
     OK: 200
   };
   const TIMEOUT_IN_MS = 2000;
 
-  const load = function (onLoad, onError) {
+  const xmlHttpRequestWrapper = function (method, url, data, onLoad, onError) {
     const xhr = new XMLHttpRequest();
     xhr.responseType = `json`;
 
@@ -29,11 +30,20 @@
 
     xhr.timeout = TIMEOUT_IN_MS;
 
-    xhr.open(`GET`, UrlList.URL_LOAD);
-    xhr.send();
+    xhr.open(method, url);
+    xhr.send(data);
+  };
+
+  const loadMiniatures = (onLoad, onError) => {
+    xmlHttpRequestWrapper(`GET`, UrlList.URL_LOAD_MINIATURES, null, onLoad, onError);
+  };
+
+  const uploadPictureForm = (data, onLoad, onError) => {
+    xmlHttpRequestWrapper(`POST`, UrlList.URL_UPLOAD_PICTURE, data, onLoad, onError);
   };
 
   window.backend = {
-    load
+    loadMiniatures,
+    uploadPictureForm
   };
 })();
