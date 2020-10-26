@@ -1,73 +1,113 @@
-// Модуль, который работает с формой редактирования изображения.
+// Модуль, который работает с формой редактирования изображения
 'use strict';
 
+const EFFECT_DEFAULT_VALUE = `100%`;
+
+const picturesSection = document.querySelector(`.pictures`);
+const body = document.querySelector(`body`);
+const uploadImageOverlay = picturesSection.querySelector(`.img-upload__overlay`);
+const uploadFileInput = picturesSection.querySelector(`#upload-file`);
+const uploadFileCloseButton = picturesSection.querySelector(`#upload-cancel`);
+const textEditHashtag = picturesSection.querySelector(`.text__hashtags`);
+const textEditComment = picturesSection.querySelector(`.text__description`);
+const pictureEffectLevelPin = picturesSection.querySelector(`.effect-level__pin`);
+const pictureEffectLevelDepth = picturesSection.querySelector(`.effect-level__depth`);
+const preview = picturesSection.querySelector(`.img-upload__preview img`);
+const effectsPreviewItems = picturesSection.querySelectorAll(`.effects__preview`);
+
+
 /**
- * Загрузка изображения и показ формы редактирования ---------------------------------
+ * Обработчик нажатия Esc - закрывает попап с настройками
+ * @param {*} evt событие
  */
-(() => {
-  const picturesSection = document.querySelector(`.pictures`);
-  const bodyTag = document.querySelector(`body`);
-  const uploadImageOverlay = picturesSection.querySelector(`.img-upload__overlay`);
-  const uploadFileInput = picturesSection.querySelector(`#upload-file`);
-  const uploadFileCloseButton = picturesSection.querySelector(`#upload-cancel`);
-  const textEditHashtag = picturesSection.querySelector(`.text__hashtags`);
-  const textEditComment = picturesSection.querySelector(`.text__description`);
+const onPopupEscPress = (evt) => {
+  if (evt.key === `Escape`) {
+    closePictureEditWindow();
+  }
+};
 
-  /**
-   * Обработчик нажатия Esc - закрывает попап с настройками
-   * @param {*} evt событие
-   */
-  const onPopupEscPress = (evt) => {
-    if (evt.key === `Escape`) {
-      closePhotoEditWindow();
-    }
-  };
+// Открытие окна выбора фотографии
+const openPictureEditWindow = () => {
+  const FILE_TYPES = [`gif`, `jpg`, `jpeg`, `png`];
 
-  // Запрет закрытия окна setup при фокусе на поле для ввода хэштега
-  textEditHashtag.addEventListener(`focus`, () => {
-    document.removeEventListener(`keydown`, onPopupEscPress);
+  const file = (uploadFileInput.files[0]);
+  const fileName = file.name.toLowerCase();
+  const isMatches = FILE_TYPES.some((fileType) => {
+    return fileName.endsWith(fileType);
   });
 
-  // Добавление закрытия окна setup при уходе фокуса с поля для ввода хэштега
-  textEditHashtag.addEventListener(`blur`, () => {
-    document.addEventListener(`keydown`, onPopupEscPress);
+  if (!isMatches) {
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.addEventListener(`load`, () => {
+    preview.src = reader.result;
+
+    effectsPreviewItems.forEach((item) => {
+      item.style.backgroundImage = `url(${reader.result})`;
+    });
   });
 
-  // Запрет закрытия окна setup при фокусе на поле для ввода комментария
-  textEditComment.addEventListener(`focus`, () => {
-    document.removeEventListener(`keydown`, onPopupEscPress);
-  });
+  reader.readAsDataURL(file);
+  resetFormToDefaultState();
+  uploadImageOverlay.classList.remove(`hidden`);
+  body.classList.add(`modal-open`);
+  document.addEventListener(`keydown`, onPopupEscPress);
+};
 
-  // Добавление закрытия окна setup при уходе фокуса с поля для ввода комментария
-  textEditComment.addEventListener(`blur`, () => {
-    document.addEventListener(`keydown`, onPopupEscPress);
-  });
+const resetFormToDefaultState = () => {
+  uploadFileInput.value = ``;
+  picturesSection.querySelector(`.effects__radio`).checked = true; // Сброс - установить первый элемент checked
+  window.formScale.reset();
+  window.formEffect.reset();
+  textEditHashtag.value = ``;
+  textEditComment.value = ``;
+  pictureEffectLevelPin.style.left = EFFECT_DEFAULT_VALUE;
+  pictureEffectLevelDepth.style.width = EFFECT_DEFAULT_VALUE;
+};
 
-  // Открытие окна выбора фотографии
-  const openPhotoEditWindow = () => {
-    uploadImageOverlay.classList.remove(`hidden`);
-    bodyTag.classList.add(`modal-open`);
-    document.addEventListener(`keydown`, onPopupEscPress);
-  };
+// Закрытие окна выбора фотографии, сброс формы в исходное состояние
+const closePictureEditWindow = (removeModal = true) => {
+  uploadImageOverlay.classList.add(`hidden`);
+  document.removeEventListener(`keydown`, onPopupEscPress);
+  if (removeModal) {
+    body.classList.remove(`modal-open`);
+  }
+  resetFormToDefaultState();
+};
 
-  // Закрытие окна выбора фотографии
-  const closePhotoEditWindow = () => {
-    uploadImageOverlay.classList.add(`hidden`);
-    bodyTag.classList.remove(`modal-open`);
-    uploadFileInput.value = ``;
-    picturesSection.querySelector(`.effects__radio`).checked = true; // Сброс - установить первый элемент checked
-    window.formScale.reset();
-    window.formEffect.reset();
-    document.removeEventListener(`keydown`, onPopupEscPress);
-  };
+// Запрет закрытия окна setup при фокусе на поле для ввода хэштега
+textEditHashtag.addEventListener(`focus`, () => {
+  document.removeEventListener(`keydown`, onPopupEscPress);
+});
 
-  // Обработчик при изменении edit.value
-  uploadFileInput.addEventListener(`change`, () => {
-    openPhotoEditWindow();
-  });
+// Добавление обработчика закрытия окна setup при уходе фокуса с поля для ввода хэштега
+textEditHashtag.addEventListener(`blur`, () => {
+  document.addEventListener(`keydown`, onPopupEscPress);
+});
 
-  // Обработчик при нажатии на кнопку close popup
-  uploadFileCloseButton.addEventListener(`click`, () => {
-    closePhotoEditWindow();
-  });
-})();
+// Запрет закрытия окна setup при фокусе на поле для ввода комментария
+textEditComment.addEventListener(`focus`, () => {
+  document.removeEventListener(`keydown`, onPopupEscPress);
+});
+
+// Добавление обработчика закрытия окна setup при уходе фокуса с поля для ввода комментария
+textEditComment.addEventListener(`blur`, () => {
+  document.addEventListener(`keydown`, onPopupEscPress);
+});
+
+// Обработчик при изменении edit.value
+uploadFileInput.addEventListener(`change`, () => {
+  openPictureEditWindow();
+});
+
+// Обработчик при нажатии на кнопку close popup
+uploadFileCloseButton.addEventListener(`click`, () => {
+  closePictureEditWindow();
+});
+
+window.form = {
+  closePictureEditWindow,
+  EFFECT_DEFAULT_VALUE
+};

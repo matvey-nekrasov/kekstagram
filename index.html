@@ -39,7 +39,7 @@
 
             <!-- Изначальное состояние поля для загрузки изображения -->
             <fieldset class="img-upload__start">
-              <input type="file" id="upload-file" class="img-upload__input  visually-hidden" name="filename" required>
+              <input type="file" id="upload-file" class="img-upload__input visually-hidden" name="filename" required accept="image/*">
               <label for="upload-file" class="img-upload__label  img-upload__control">Загрузить</label>
             </fieldset>
 
@@ -158,7 +158,7 @@
           </div>
 
           <!-- Комментарии к изображению -->
-          <div class="social__comment-count">5 из <span class="comments-count">125</span> комментариев</div>
+          <div class="social__comment-count"><span class="comments-shown-count">5</span> из <span class="comments-count">125</span> комментариев</div>
           <ul class="social__comments">
             <li class="social__comment">
               <img class="social__picture" src="img/avatar-4.svg" alt="Аватар комментатора фотографии" width="35" height="35">
@@ -176,7 +176,7 @@
           <!-- Форма для отправки комментария -->
           <div class="social__footer">
             <img class="social__picture" src="img/avatar-6.svg" alt="Аватар комментатора фотографии" width="35" height="35">
-            <input type="text" class="social__footer-text" placeholder="Ваш комментарий...">
+            <input type="text" class="social__footer-text" placeholder="Ваш комментарий..." maxlength="140">
             <button type="button" class="social__footer-btn" name="button">Отправить</button>
           </div>
         </div>
@@ -238,16 +238,7 @@
     <div class="img-upload__message  img-upload__message--loading">Загружаем...</div>
   </template>
 
-  <script src="js/util.js"></script>
-  <script src="js/debounce.js"></script>
-  <script src="js/backend.js"></script>
-  <script src="js/miniatures-render.js"></script>
-  <script src="js/miniatures-order.js"></script>
-  <script src="js/miniatures.js"></script>
-  <script src="js/form-effect.js"></script>
-  <script src="js/form-scale.js"></script>
-  <script src="js/form.js"></script>
-  <script src="js/hashtag-check.js"></script>
-  <script src="js/main.js"></script>
+  <script src="./bundle.js"></script>
+
 </body>
 </html>
