@@ -50,7 +50,6 @@ const openPictureEditWindow = () => {
   });
 
   reader.readAsDataURL(file);
-  resetFormToDefaultState();
   uploadImageOverlay.classList.remove(`hidden`);
   body.classList.add(`modal-open`);
   document.addEventListener(`keydown`, onPopupEscPress);
